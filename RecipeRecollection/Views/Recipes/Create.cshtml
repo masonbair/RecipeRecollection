@@ -1,0 +1,54 @@
+﻿@model RecipeRecollection.Models.Recipe
+
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<h1>Create</h1>
+
+<h4>Recipe</h4>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+            <div class="form-group">
+                <label asp-for="User" class="control-label"></label>
+                <input asp-for="User" class="bg-white form-control" />
+                <span asp-validation-for="User" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Name" class="control-label"></label>
+                <input asp-for="Name" class="bg-white form-control" />
+                <span asp-validation-for="Name" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Ingredients" class="control-label"></label>
+                <input asp-for="Ingredients" class="bg-white form-control" />
+                <span asp-validation-for="Ingredients" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Steps" class="control-label"></label>
+                <input asp-for="Steps" class="bg-white form-control" />
+                <span asp-validation-for="Steps" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <label asp-for="Url" class="control-label"></label>
+                <input asp-for="Url" class="bg-white form-control" />
+                <span asp-validation-for="Url" class="text-danger"></span>
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

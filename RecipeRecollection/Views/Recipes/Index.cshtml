@@ -1,0 +1,33 @@
+﻿@model IEnumerable<RecipeRecollection.Models.Recipe>
+
+@{
+    ViewData["Title"] = "Index";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<h1 class="text-center fw-bold">A Recollection of all your Recipes</h1>
+
+<p>
+    <a class="btn btn-info btn-sm" asp-action="Create">Add Recipe</a>
+</p>
+<br />
+<table class="table">
+    <tbody>
+        <div class="row row-cols-1 row-cols-md-2 g-4">
+            @foreach (var item in Model)
+            {
+                <div class="row p-3">
+                    <div class="card bg-primary">
+                        <div class="card-body">
+                            <h5 class="card-title text-bg-secondary text-white text-center"> @Html.DisplayFor(modelItem => item.Name)</h5>
+                            <p class="card-text text-white">@Html.DisplayFor(modelItem => item.Ingredients)</p>
+                            <p class="card-text text-white">@Html.DisplayFor(modelItem => item.Steps)</p>
+                            <a href="@Html.DisplayFor(modelItem => item.Url)" class="card-link text-info">@Html.DisplayFor(modelItem => item.Name) URL</a>
+                            <a asp-action="Edit" asp-route-id="@item.recipeID" class="card-link text-info">Edit</a>
+                        </div>
+                    </div>
+                </div>
+            }
+        </div>
+    </tbody>
+</table>

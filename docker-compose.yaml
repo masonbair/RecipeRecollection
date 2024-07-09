@@ -1,0 +1,29 @@
+version: "3.8"
+
+services:
+  sql:
+    container_name: sqlserver
+    image: mcr.microsoft.com/mssql/server:2019-latest
+    ports:
+      - 1433:1433
+    environment:
+      ACCEPT_EULA: "Y"
+      MSSQL_SA_PASSWORD: "2#RtNa123"
+    networks:
+      - aspcore-network
+  netcore:
+    container_name: RecipeRecollection
+    build: 
+      context: .
+      dockerfile: ./RecipeRecollection/Dockerfile
+    environment:
+      ASPNETCORE_ENVIRONMENT: "Development"
+    ports:
+      - 80:80
+      - 443:443
+    networks:
+      - aspcore-network
+
+networks:
+    aspcore-network:
+        driver: bridge

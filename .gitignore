@@ -17,6 +17,7 @@
 mono_crash.*
 
 RecipeRecollection/appsettings.json
+codeHolder.txt
 
 # Build results
 [Dd]ebug/

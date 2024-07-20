@@ -1,12 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RecipeRecollection.Data;
 using RecipeRecollection.Models;
+
+//This is the using statements for 
+using System;
+using System.Collections;
+using Python.Runtime;
 
 namespace RecipeRecollection.Controllers
 {
@@ -22,9 +28,9 @@ namespace RecipeRecollection.Controllers
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
-              return _context.Recipes != null ? 
-                          View(await _context.Recipes.ToListAsync()) :
-                          Problem("Entity set 'RecipeRecollectionContext.Recipes'  is null.");
+            return _context.Recipes != null ?
+                        View(await _context.Recipes.ToListAsync()) :
+                        Problem("Entity set 'RecipeRecollectionContext.Recipes'  is null.");
         }
 
         // GET: Recipes/Details/5
@@ -56,10 +62,43 @@ namespace RecipeRecollection.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("recipeID,User,Name,Ingredients,Steps,Url")] Recipe recipe)
+        public async Task<IActionResult> Create([Bind("Url")] Recipe recipe)
         {
+            Environment.SetEnvironmentVariable("PYTHONHOME", "/usr/lib/python3.9");
+            Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", "/usr/lib/x86_64-linux-gnu/libpython3.9.so");
+
+            if (!PythonEngine.IsInitialized)
+            {
+                PythonEngine.Initialize();
+                Console.WriteLine("Python Engine is running");
+            }
+
+            using (Py.GIL())
+            {
+                var pythonScript = Py.Import("\\RecipeRecollection\\Controllers\\findRecipe");
+                var url = new PyString(recipe.Url);
+                Console.WriteLine("B4 Soup is running");
+                var result = pythonScript.InvokeMethod("RUNTHESOUP", new PyObject[] { url });
+                Console.WriteLine(result);
+            }
+
+            recipe.User = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            System.Diagnostics.Debug.WriteLine(recipe.User);
+            if (!ModelState.IsValid)
+            {
+                // Print out model state errors
+                foreach (var value in ModelState.Values)
+                {
+                    foreach (var error in value.Errors)
+                    {
+                        System.Diagnostics.Debug.WriteLine(error.ErrorMessage);
+                    }
+                }
+                return View(recipe);
+            }
             if (ModelState.IsValid)
             {
+                System.Diagnostics.Debug.WriteLine("Is valid");
                 _context.Add(recipe);
                 await _context.SaveChangesAsync();
                 return RedirectToAction(nameof(Index));
@@ -150,14 +189,14 @@ namespace RecipeRecollection.Controllers
             {
                 _context.Recipes.Remove(recipe);
             }
-            
+
             await _context.SaveChangesAsync();
             return RedirectToAction(nameof(Index));
         }
 
         private bool RecipeExists(int id)
         {
-          return (_context.Recipes?.Any(e => e.recipeID == id)).GetValueOrDefault();
+            return (_context.Recipes?.Any(e => e.recipeID == id)).GetValueOrDefault();
         }
     }
 }

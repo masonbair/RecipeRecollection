@@ -24,6 +24,7 @@
                             <p class="card-text text-white">@Html.DisplayFor(modelItem => item.Steps)</p>
                             <a href="@Html.DisplayFor(modelItem => item.Url)" class="card-link text-info">@Html.DisplayFor(modelItem => item.Name) URL</a>
                             <a asp-action="Edit" asp-route-id="@item.recipeID" class="card-link text-info">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.recipeID" class="card-link text-info">Delete</a>
                         </div>
                     </div>
                 </div>

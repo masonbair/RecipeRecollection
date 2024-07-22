@@ -8,10 +8,7 @@ using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using RecipeRecollection.Data;
 using RecipeRecollection.Models;
-
-//This is the using statements for 
-using System;
-using System.Collections;
+//This is the using statements for the python stufff
 using Python.Runtime;
 
 namespace RecipeRecollection.Controllers
@@ -23,6 +20,7 @@ namespace RecipeRecollection.Controllers
         public RecipesController(RecipeRecollectionContext context)
         {
             _context = context;
+           
         }
 
         // GET: Recipes
@@ -64,23 +62,39 @@ namespace RecipeRecollection.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Url")] Recipe recipe)
         {
-            Environment.SetEnvironmentVariable("PYTHONHOME", "/usr/lib/python3.9");
-            Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", "/usr/lib/x86_64-linux-gnu/libpython3.9.so");
-
+            
+            Console.WriteLine("Entered Create");
+            //Prevents Pythonnet from freezing up when running the create fnction multiple times
             if (!PythonEngine.IsInitialized)
             {
+                Environment.SetEnvironmentVariable("PYTHONHOME", "/usr/lib/python3.9");
+                Environment.SetEnvironmentVariable("PYTHONNET_PYDLL", "/usr/lib/x86_64-linux-gnu/libpython3.9.so");
                 PythonEngine.Initialize();
-                Console.WriteLine("Python Engine is running");
+                PythonEngine.BeginAllowThreads();
+                Console.WriteLine("IT IS RUNNING :)");
             }
 
+            Console.WriteLine("Attempting to run GIL");
             using (Py.GIL())
             {
-                var pythonScript = Py.Import("\\RecipeRecollection\\Controllers\\findRecipe");
+                Console.WriteLine("Running GIL");
+                PyObject result;
+                PyDict resultDict;
+                dynamic sys = Py.Import("sys");
+                sys.path.append("/app");
+
+                var pythonScript = Py.Import("findRecipe");
                 var url = new PyString(recipe.Url);
                 Console.WriteLine("B4 Soup is running");
-                var result = pythonScript.InvokeMethod("RUNTHESOUP", new PyObject[] { url });
+                result = pythonScript.InvokeMethod("RUNTHESOUP", new PyObject[] { url });
                 Console.WriteLine(result);
+                resultDict = new PyDict(result);
+                recipe.Ingredients = resultDict.GetItem("Ingredients").ToString();
+                recipe.Steps = resultDict.GetItem("Instructions").ToString();
+                recipe.Name = resultDict.GetItem("Name").ToString();
             }
+
+            
 
             recipe.User = User.FindFirstValue(ClaimTypes.NameIdentifier);
             System.Diagnostics.Debug.WriteLine(recipe.User);
@@ -185,8 +199,10 @@ namespace RecipeRecollection.Controllers
                 return Problem("Entity set 'RecipeRecollectionContext.Recipes'  is null.");
             }
             var recipe = await _context.Recipes.FindAsync(id);
+            Console.WriteLine(recipe);
             if (recipe != null)
             {
+                Console.WriteLine("Removing");
                 _context.Recipes.Remove(recipe);
             }
 

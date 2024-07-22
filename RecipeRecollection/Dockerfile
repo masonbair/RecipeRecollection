@@ -4,10 +4,10 @@ FROM mcr.microsoft.com/dotnet/aspnet:6.0 AS base
 WORKDIR /app
 EXPOSE 80
 EXPOSE 443
-
 RUN apt-get update && apt-get install --no-install-recommends -y python3.9 python3.9-dev python3-pip python3-wheel build-essential && \
    apt-get clean && rm -rf /var/lib/apt/lists/*
-RUN pip3 install beautifulsoup4 requests
+RUN pip3 install beautifulsoup4 requests lxml
+COPY RecipeRecollection/Controllers/findRecipe.py /app/ 
 
 FROM mcr.microsoft.com/dotnet/sdk:6.0 AS build
 WORKDIR /src

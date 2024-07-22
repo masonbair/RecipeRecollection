@@ -13,16 +13,38 @@ def RUNTHESOUP(webUrl):
     # noqa
     }
 
+    web = webUrl.encode("UTF-8")
+
     req = requests.Session()
-    html_text = req.get(webUrl, headers=headers).text
+    html_text = req.get(web, headers=headers).text
     beaut = BeautifulSoup(html_text, 'lxml')
 
     ingredients = findIngredients(beaut)
     instructions = findInstructions(beaut)
     notes = findNotes(beaut)
+    name = findName(beaut)
 
-    return {"Ingredients": ingredients, "Instructions": instructions, "Notes": notes}
+    return {"Ingredients": ingredients, "Instructions": instructions, "Notes": notes, "Name": name}
 
+
+def findName(soup):
+    # Holds all the ingredient info to check for duplicates
+    names = ['entry-title', 'post-title']
+    for recipe_item in soup.find_all("h1", class_=True):
+        for c_name in recipe_item["class"]:
+            split_c_name = c_name.split('-')
+            for name in names:
+                if name in split_c_name:
+                    return recipe_item.text
+            split_c_name = c_name.split(' ')
+            for name in names:
+                if name in split_c_name:
+                    return recipe_item.text
+            split_c_name = c_name.split('__')
+            for name in names:
+                if name in split_c_name:
+                    return recipe_item.text
+    return
 
 
 def findIngredients(soup):
@@ -33,14 +55,14 @@ def findIngredients(soup):
     search_for_names = ['ingredients']
     ingredient_class_list = findSpecificname(search_for_names, ingredient_class_list, soup)
     if ingredient_class_list[0] == 'empty':
-        print("No ingredients found")
+        #print("No ingredients found")
         return
     for single_ingredients in ingredient_class_list:
         texts = single_ingredients.find_all(text_tags)
         for text in texts:
             if text.text.split() not in ingredient_text_list:
-                ingredient_text_list.append(text.text.split())
-                print(text.text.strip())
+                ingredient_text_list.append(text.text.strip())
+                #print(text.text.strip())
     return ingredient_text_list
 
 def findInstructions(soup):
@@ -50,16 +72,13 @@ def findInstructions(soup):
     instructions_class_list = findSpecificname(search_for_names, instructions_class_list, soup)
     instruction_text_tag = ['li']
     if instructions_class_list[0] == 'empty':
-        print("No instructions found")
+        #print("No instructions found")
         return
     for single_instruction in instructions_class_list:
         texts = single_instruction.find_all(instruction_text_tag)
         for index, text in enumerate(texts):
-            if text.text.strip() == "Ingredients" or text.text.strip() == "Directions":
-                print(text.text.strip())
-            else:
+            if text.text.strip() != "Ingredients" or text.text.strip() != "Directions":
                 instructions_text_list.append(text.text.strip())
-                print(f"{index}: {text.text.strip()}")
     return instructions_text_list
 
 def findNotes(soup):
@@ -71,12 +90,12 @@ def findNotes(soup):
     span_and_text.append('span')
     notes_class_list = findSpecificname(search_for_names, notes_class_list, soup)
     if notes_class_list[0] == 'empty':
-        print("No notes found")
+        #print("No notes found")
         return
     for single_note in notes_class_list:
         texts = single_note.find_all(span_and_text)
         for text in texts:
-            print(text.text)
+            #print(text.text)
             notes_text_list.append(text.text)
     return notes_text_list
 

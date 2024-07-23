@@ -30,4 +30,8 @@
     <Folder Include="Migrations\" />
   </ItemGroup>
 
+  <ItemGroup>
+    <None Include="wwwroot\dist\IndexStyle.css" />
+  </ItemGroup>
+
 </Project>

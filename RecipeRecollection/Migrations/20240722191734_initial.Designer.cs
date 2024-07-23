@@ -12,8 +12,8 @@ using RecipeRecollection.Data;
 namespace RecipeRecollection.Migrations
 {
     [DbContext(typeof(RecipeRecollectionContext))]
-    [Migration("20240720193303_init")]
-    partial class init
+    [Migration("20240722191734_initial")]
+    partial class initial
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
@@ -238,6 +238,9 @@ namespace RecipeRecollection.Migrations
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Name")
+                        .HasColumnType("nvarchar(max)");
+
+                    b.Property<string>("Notes")
                         .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Steps")

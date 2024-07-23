@@ -20,15 +20,19 @@ namespace RecipeRecollection.Controllers
         public RecipesController(RecipeRecollectionContext context)
         {
             _context = context;
-           
+
         }
 
         // GET: Recipes
         public async Task<IActionResult> Index()
         {
-            return _context.Recipes != null ?
-                        View(await _context.Recipes.ToListAsync()) :
-                        Problem("Entity set 'RecipeRecollectionContext.Recipes'  is null.");
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (_context.Recipes != null)
+            {
+                var userRecipes = await _context.Recipes.Where(m => m.User == userId).ToListAsync();
+                return View(userRecipes);
+            }
+            return Problem("Entity set 'RecipeRecollectionContext.Recipes'  is null.");
         }
 
         // GET: Recipes/Details/5
@@ -39,8 +43,7 @@ namespace RecipeRecollection.Controllers
                 return NotFound();
             }
 
-            var recipe = await _context.Recipes
-                .FirstOrDefaultAsync(m => m.recipeID == id);
+            var recipe = await _context.Recipes.FirstOrDefaultAsync(m => m.recipeID == id);
             if (recipe == null)
             {
                 return NotFound();
@@ -62,7 +65,7 @@ namespace RecipeRecollection.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Url")] Recipe recipe)
         {
-            
+
             Console.WriteLine("Entered Create");
             //Prevents Pythonnet from freezing up when running the create fnction multiple times
             if (!PythonEngine.IsInitialized)
@@ -91,10 +94,20 @@ namespace RecipeRecollection.Controllers
                 resultDict = new PyDict(result);
                 recipe.Ingredients = resultDict.GetItem("Ingredients").ToString();
                 recipe.Steps = resultDict.GetItem("Instructions").ToString();
+                recipe.Notes = resultDict.GetItem("Notes").ToString();
                 recipe.Name = resultDict.GetItem("Name").ToString();
             }
 
-            
+            recipe.Name = recipe.Name.Replace("\\xa0", " ");
+            recipe.Ingredients = recipe.Ingredients.Replace("US CustomaryMetric", " ");
+            recipe.Ingredients = recipe.Ingredients.Replace("\\xa0", " ");
+            recipe.Steps = recipe.Steps.Replace("\\xa0", " ");
+            recipe.Notes = recipe.Notes.Replace("\\xa0", " ");
+
+
+
+
+
 
             recipe.User = User.FindFirstValue(ClaimTypes.NameIdentifier);
             System.Diagnostics.Debug.WriteLine(recipe.User);

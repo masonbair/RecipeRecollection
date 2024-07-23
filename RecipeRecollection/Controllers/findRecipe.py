@@ -29,7 +29,7 @@ def RUNTHESOUP(webUrl):
 
 def findName(soup):
     # Holds all the ingredient info to check for duplicates
-    names = ['entry-title', 'post-title']
+    names = ['entry-title', 'post-title', 'title']
     for recipe_item in soup.find_all("h1", class_=True):
         for c_name in recipe_item["class"]:
             split_c_name = c_name.split('-')
@@ -52,7 +52,7 @@ def findIngredients(soup):
     ingredient_class_list = []
     # Holds all the ingredient info to check for duplicates
     ingredient_text_list = []
-    search_for_names = ['ingredients']
+    search_for_names = ['ingredients', 'ingredients-block']
     ingredient_class_list = findSpecificname(search_for_names, ingredient_class_list, soup)
     if ingredient_class_list[0] == 'empty':
         #print("No ingredients found")

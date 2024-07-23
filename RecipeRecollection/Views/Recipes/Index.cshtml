@@ -4,31 +4,98 @@
     ViewData["Title"] = "Index";
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
+
+<link rel="stylesheet" href="~/dist/IndexStyle.css" />
 <br />
 <h1 class="text-center fw-bold">A Recollection of all your Recipes</h1>
 
 <p>
-    <a class="btn btn-info btn-sm" asp-action="Create">Add Recipe</a>
+    <a class="btn btn-primary btn-sm" asp-action="Create">Add Recipe</a>
 </p>
 <br />
 <table class="table">
     <tbody>
         <div class="row row-cols-1 row-cols-md-2 g-4">
+            @{
+                int recipeIndex = 1;
+            }
             @foreach (var item in Model)
             {
                 <div class="row p-3">
-                    <div class="card bg-primary">
+                    <div class="card bg-primary" onclick="document.getElementById('id-@recipeIndex').style.display='block'">
                         <div class="card-body">
-                            <h5 class="card-title text-bg-secondary text-white text-center"> @Html.DisplayFor(modelItem => item.Name)</h5>
-                            <p class="card-text text-white">@Html.DisplayFor(modelItem => item.Ingredients)</p>
-                            <p class="card-text text-white">@Html.DisplayFor(modelItem => item.Steps)</p>
-                            <a href="@Html.DisplayFor(modelItem => item.Url)" class="card-link text-info">@Html.DisplayFor(modelItem => item.Name) URL</a>
-                            <a asp-action="Edit" asp-route-id="@item.recipeID" class="card-link text-info">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@item.recipeID" class="card-link text-info">Delete</a>
+                            <h5 class="card-title text-bg-secondary rounded text-white text-center"> @Html.DisplayFor(modelItem => item.Name)</h5>
+                            <p class="card-text text-white">Click to view recipe data</p>
+                            <a href="@Html.DisplayFor(modelItem => item.Url)" class="btn btn-sm btn-secondary text-white">@Html.DisplayFor(modelItem => item.Name) URL</a>
+                            <a asp-action="Edit" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Edit</a>
+                            <a asp-action="Delete" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Delete</a>
+                        </div>
+                    </div>
+                    <div id="id-@recipeIndex" class="modal">
+                        <span onclick="document.getElementById('id-@recipeIndex').style.display='none'"
+                        class="close" title="Close Modal">&times;</span>
+                        <div class="card modal-content bg-primary">
+                            <div class="card-body">
+                                <h5 class="card-title text-bg-secondary rounded text-white text-center"> @Html.DisplayFor(modelItem => item.Name)</h5>
+                                @{
+                                    if (item.Ingredients == null)
+                                    {
+                                        <p class="card-text text-white">Unable to find the Ingredients</p>
+                                    }
+                                    else
+                                    {
+                                        string[] ingredients = item.Ingredients.Substring(2, item.Ingredients.Length - 4).Split("\', \'");
+                                        int index = 1;
+                                        <h5 class="card-text bold text-black">Ingredients:</h5>
+                                        foreach (var ingredient in ingredients)
+                                        {
+                                            if (ingredient != "Ingredients")
+                                            {
+                                                <p class="card-text text-white">@index: @ingredient</p>
+                                                index++;
+                                            }
+                                        }
+                                    }
+                                }
+                                @{
+                                    if (item.Steps == null)
+                                    {
+                                        <p class="card-text text-white">Unable to find any instructions</p>
+                                    }
+                                    else
+                                    {
+                                        string[] steps = item.Steps.Substring(2, item.Steps.Length - 4).Split("\', \'");
+                                        <h5 class="card-text bold text-black">Steps:</h5>
+                                        int index = 1;
+                                        foreach (var step in steps)
+                                        {
+                                            <p class="card-text text-white">@index: @step</p>
+                                            index++;
+                                        }
+                                    }
+                                }
+                                <a href="@Html.DisplayFor(modelItem => item.Url)" class="btn btn-sm btn-secondary text-white">@Html.DisplayFor(modelItem => item.Name) URL</a>
+                                <a asp-action="Edit" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Delete</a>
+                                <button type="button" onclick="document.getElementById('id-@recipeIndex').style.display='none'" class="btn btn-sm text-white btn-secondary">Cancel</button>
+                            </div>
                         </div>
                     </div>
                 </div>
+                recipeIndex++;
             }
         </div>
     </tbody>
 </table>
+
+<script>
+    // Get the modal
+    window.onclick = function (event) {
+        var modals = document.getElementsByClassName('modal');
+        for (var i = 0; i < modals.length; i++) {
+            if (event.target == modals[i]) {
+                modals[i].style.display = "none";
+            }
+        }
+    }
+</script>

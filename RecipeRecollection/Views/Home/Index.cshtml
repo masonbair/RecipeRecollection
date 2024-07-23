@@ -1,8 +1,31 @@
-﻿@{
-    ViewData["Title"] = "Home Page";
-}
+﻿@model RecipeRecollection.Models.Recipe
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://docs.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
-</div>
+@{
+    ViewData["Title"] = "Create";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+<br />
+<br />
+<br />
+<br />
+<h1 class="text-center fw-bold">Recipe Recollection</h1>
+<br />
+<br />
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col form-floating mb-3">
+            <input asp-for="Url" type="url" class="form-control bg-white" id="floatingInput" placeholder="URL">
+            <label asp-for="Url" class="" for="floatingInput"><p class="text-black"> Website Url</p></label>
+            <span asp-validation-for="Url" class="text-danger"></span>
+        </div>
+        <input type="submit" value="Give me the good stuff" class=" fw-bold btn btn-primary" />
+    </div>
+</form>
+
+
+@section Scripts {
+    @{
+        await Html.RenderPartialAsync("_ValidationScriptsPartial");
+    }
+}

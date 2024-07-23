@@ -5,29 +5,25 @@
     Layout = "~/Views/Shared/_Layout.cshtml";
 }
 <br />
-<h1>Create</h1>
-
-<h4>Recipe</h4>
-<hr />
-<div class="row">
-    <div class="col-md-4">
-        <form asp-action="Create">
-            <div asp-validation-summary="ModelOnly" class="text-danger"></div>
-            <div class="form-group">
-                <label asp-for="Url" class="control-label"></label>
-                <input asp-for="Url" class="bg-white form-control" />
-                <span asp-validation-for="Url" class="text-danger"></span>
-            </div>
-            <div class="form-group">
-                <input type="submit" value="Create" class="btn btn-primary" />
-            </div>
-        </form>
+<br />
+<br />
+<br />
+<h1 class="text-center fw-bold">Recipe Recollection</h1>
+<br />
+<h3 class="text-center">Makes working with online recipes a breeze!</h3>
+<br />
+<form asp-action="Create">
+    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+    <div class="row">
+        <div class="col form-floating mb-3">
+            <input asp-for="Url" type="url" class="form-control bg-white" id="floatingInput" placeholder="URL">
+            <label asp-for="Url" class="" for="floatingInput"><p class="text-black">Enter Recipe Url to be simpified</p></label>
+            <span asp-validation-for="Url" class="text-danger"></span>
+        </div>
+        <input type="submit" value="Drain off all the excess juices" class=" fw-bold btn btn-primary" />
     </div>
-</div>
+</form>
 
-<div>
-    <a asp-action="Index">Back to List</a>
-</div>
 
 @section Scripts {
     @{

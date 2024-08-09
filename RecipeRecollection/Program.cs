@@ -2,6 +2,8 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using RecipeRecollection.Areas.Identity.Data;
 using RecipeRecollection.Data;
+using System;
+
 var builder = WebApplication.CreateBuilder(args);
 var connectionString = builder.Configuration.GetConnectionString("RecipeRecollectionContextConnection") ?? throw new InvalidOperationException("Connection string 'RecipeRecollectionContextConnection' not found.");
 
@@ -19,8 +21,32 @@ builder.Services.AddRazorPages()
 
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
+using (var serviceScope = app.Services.GetRequiredService<IServiceScopeFactory>().CreateScope())
+{
+    var logger = serviceScope.ServiceProvider.GetRequiredService<ILogger<Program>>();
+    var db = serviceScope.ServiceProvider.GetRequiredService<RecipeRecollectionContext>().Database;
+
+    logger.LogInformation("Migrating database...");
+
+    try
+    {
+        // Ensure database is created
+        db.EnsureCreated();
+
+        // Apply pending migrations
+        db.Migrate();
+
+        logger.LogInformation("Database created and migrated successfully.");
+    }
+    catch (Exception ex)
+    {
+        logger.LogError(ex, "An error occurred while creating and migrating the database.");
+    }
+}
+
+
+    // Configure the HTTP request pipeline.
+    if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.

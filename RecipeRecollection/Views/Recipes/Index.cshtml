@@ -26,7 +26,7 @@
                         <div class="card-body">
                             <h5 class="card-title text-bg-secondary rounded text-white text-center"> @Html.DisplayFor(modelItem => item.Name)</h5>
                             <p class="card-text text-white">Click to view recipe data</p>
-                            <a href="@Html.DisplayFor(modelItem => item.Url)" class="btn btn-sm btn-secondary text-white">@Html.DisplayFor(modelItem => item.Name) URL</a>
+                            <a href="@Html.DisplayFor(modelItem => item.Url)" target="_blank" class="btn btn-sm btn-secondary text-white">@Html.DisplayFor(modelItem => item.Name) URL</a>
                             <a asp-action="Edit" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Edit</a>
                             <a asp-action="Delete" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Delete</a>
                         </div>
@@ -74,7 +74,7 @@
                                         }
                                     }
                                 }
-                                <a href="@Html.DisplayFor(modelItem => item.Url)" class="btn btn-sm btn-secondary text-white">@Html.DisplayFor(modelItem => item.Name) URL</a>
+                                <a href="@Html.DisplayFor(modelItem => item.Url)" target="_blank" class="btn btn-sm btn-secondary text-white">@Html.DisplayFor(modelItem => item.Name) URL</a>
                                 <a asp-action="Edit" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Edit</a>
                                 <a asp-action="Delete" asp-route-id="@item.recipeID" class="btn btn-sm btn-secondary text-white">Delete</a>
                                 <button type="button" onclick="document.getElementById('id-@recipeIndex').style.display='none'" class="btn btn-sm text-white btn-secondary">Cancel</button>
